@@ -16,8 +16,8 @@ func PublishNotification(notif models.Notification) error {
 	priority := uint8(notif.Priority);
 
 	err = serverCh.Publish(
-		"notifications_exchange",
-		notif.Type,
+		"",
+		"notifications",
 		false,
 		false,
 		amqp.Publishing{

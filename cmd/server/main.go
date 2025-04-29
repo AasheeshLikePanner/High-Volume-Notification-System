@@ -2,21 +2,19 @@ package main
 
 import (
 	"encoding/json"
-    "log"
-    "net/http"
+	"log"
+	"net/http"
 
-    "scalable-notification/internal/queue"  
-    "scalable-notification/internal/models"
+	"scalable-notification/internal/models"
+	"scalable-notification/internal/queue"
 )
 
-
-func main(){
-	err := queue.ConnectServer();
+func main() {
+	err := queue.ConnectServer()
 
 	if err != nil {
 		log.Fatalf("Failed to connect to RabbitMQ: %v", err)
 	}
-	defer queue.CloseServer();
 
 	http.HandleFunc("/send-notification", handleSendNotification);
 
@@ -29,13 +27,13 @@ func handleSendNotification(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
 	}
-	var notif models.Notification;
+	var notif models.Notification
 	if err := json.NewDecoder(r.Body).Decode(&notif); err != nil {
 		http.Error(w, "Bad request", http.StatusBadRequest)
 		return
 	}
 
-	notif.CreatedAt = models.Now();
+	notif.CreatedAt = models.Now()
 
 	if err := queue.PublishNotification(notif); err != nil {
 		http.Error(w, "Failed to publish notification", http.StatusInternalServerError)

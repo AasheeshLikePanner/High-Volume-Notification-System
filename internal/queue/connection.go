@@ -22,7 +22,7 @@ func ConnectServer() error {
     }
     
 	_,err = serverCh.QueueDeclare(
-		"notifications_exchange", // <- same name
+		"notifications", // <- same name
 		true,  // durable
 		false, // delete when unused
 		false, // exclusive
@@ -49,7 +49,7 @@ func ConnectWorker() error {
     }
 
 	_, err = workerCh.QueueDeclare(
-        "notifications_exchange_retry",
+        "notifications_retry",
         true,  // durable
         false, // auto-delete
         false, // exclusive
@@ -57,7 +57,7 @@ func ConnectWorker() error {
         amqp.Table{
             "x-message-ttl": 30000, // 30 seconds retry delay
             "x-dead-letter-exchange": "",
-            "x-dead-letter-routing-key": "notifications_exchange", // Route back to main queue
+            "x-dead-letter-routing-key": "notifications", // Route back to main queue
         },
     )
     if err != nil {
@@ -66,7 +66,7 @@ func ConnectWorker() error {
     
     // Declare dead letter queue
     _, err = workerCh.QueueDeclare(
-        "notifications_exchange_dead",
+        "notifications_dead",
         true,  // durable
         false, // auto-delete
         false, // exclusive
