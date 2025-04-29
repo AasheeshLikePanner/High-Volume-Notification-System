@@ -74,8 +74,8 @@ func ConnectWorker() error {
         nil,   // no special arguments
     )
 	if err != nil {
-        return err
-    }
+		return err
+	}
 
     return nil
 }
